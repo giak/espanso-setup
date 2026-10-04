@@ -1,6 +1,9 @@
 # Editeur : theme local par fenetre (VS Code / Peacock), pas une config du projet.
 .vscode/
 
+# Sauvegardes faites par espanso-apply.sh avant ecriture. Horodatees, non versionnees.
+.backup/
+
 # Python : le projet n'embarque pas le runtime de PySide6.
 __pycache__/
 *.pyc

@@ -6,7 +6,9 @@ Supervision, documentation et édition des matches d'espanso sur
 - **`VISION.md`** — pourquoi ce projet existe.
 - **`docs/`** — comptes rendus forensiques datés, avec preuves.
 - **`scripts/espanso-check.sh`** — état de santé déterministe, exit 0/1.
-- **`match/base.yml`** — copie versionnée des triggers. **Source de vérité pour
+- **`scripts/espanso-apply.sh`** — déploie `match/` vers la config runtime :
+  validation, diff, sauvegarde, vérification.
+- **`match/`** — copie versionnée des triggers. **Source de vérité pour
   l'édition**, pas le fichier lu par espanso à l'exécution.
 
 ## État vérifié au 2026-10-04
@@ -47,19 +49,35 @@ espanso service status              # service systemd
 
 ## Éditer un trigger
 
-1. Écrire la modification dans **`match/base.yml`** de ce dépôt (source de vérité).
-2. Copier vers la config runtime :
+`match/` est la **source de vérité pour l'édition**. `~/.config/espanso/match/`
+reste la source de vérité pour l'**exécution**, parce qu'espanso ne lit que là.
 
-   ```bash
-   install -m 644 match/base.yml ~/.config/espanso/match/base.yml
-   ```
+```bash
+# 1. editer match/base.yml (ou tout autre .yml du dossier match/)
+# 2. voir ce qui va changer, sans ecrire
+./scripts/espanso-apply.sh --check
 
-   Ou `~/.config/espanso/match/base.yml` directement si la config runtime
-   n'a pas divergé — comparer avec `diff` d'abord.
+# 3. deployer : sauvegarde l'ancien fichier, copie, verifie
+./scripts/espanso-apply.sh          # demande confirmation
+./scripts/espanso-apply.sh --yes    # sans confirmation
+```
 
-3. Le worker recharge **automatiquement** (`--start-reason config_changed`).
-   Aucune commande de restart n'est nécessaire ; `espanso match list` suffit à
-   vérifier que le trigger est chargé.
+`espanso-apply.sh` fait quatre choses avant d'écrire quoi que ce soit :
+
+1. **valide** chaque `.yml` du dépôt (`yaml.safe_load`) et, si le schéma expose
+   `matches:`, exige un `trigger` de type chaîne non vide et **unique** par
+   fichier ;
+2. **affiche le diff** dépôt → runtime ;
+3. **sauvegarde** le fichier runtime dans `.backup/YYYY-MM-DD-HHMMSS/` (non
+   versionné) ;
+4. **revérifie** après copie que le dépôt et le runtime sont alignés et que le
+   nombre de triggers chargés par espanso correspond.
+
+Le worker recharge **automatiquement** (`--start-reason config_changed`), aucune
+commande de restart n'est nécessaire. `espanso match list` suffit à confirmer.
+
+Édition directe de `~/.config/espanso/match/base.yml` sans passer par le dépôt
+fonctionne toujours, mais `espanso-check.sh` signalera alors la divergence.
 
 ## Pièges documentés
 
