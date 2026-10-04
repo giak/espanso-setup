@@ -1,0 +1,21 @@
+matches:
+- trigger: :ns
+  replace: ok. Passe a l'étape suivante. Avance prudement, par petit pas.
+- trigger: :ne
+  replace: ok. étape suivante.
+- trigger: :fl
+  replace: fix linter
+- trigger: :co
+  replace: continue
+- trigger: :tl
+  replace: tailwindcss v3
+- trigger: :sw
+  replace: recherche les meilleures pratiques récentes
+- trigger: :wf
+  replace: mode:research => mode:plan => mode:execute => mode:review => mode:reflection
+- trigger: :cg
+  replace: '```cognition     ```'
+- trigger: :imp
+  replace: 'Implémente et réalise : '
+- trigger: :brain
+  replace: 'brainstorm et challenge '

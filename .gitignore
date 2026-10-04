@@ -1,0 +1,11 @@
+# Editeur : theme local par fenetre (VS Code / Peacock), pas une config du projet.
+.vscode/
+
+# Python : le projet n'embarque pas le runtime de PySide6.
+__pycache__/
+*.pyc
+.venv/
+
+# Divers
+*.swp
+.DS_Store
